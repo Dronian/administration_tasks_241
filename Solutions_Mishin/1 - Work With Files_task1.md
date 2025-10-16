@@ -94,8 +94,7 @@ QuickSort
 согласны
 ...
 
-[bob@host-3 Документы]$ touch sorted_example.txt revsorted_example.txt
-[bob@host-3 Документы]$ sort example.txt -o sorted_example.txt
+[bob@host-3 Документы]$ sort example.txt -o sorted_example.txt (Можно было через > или так: sort -o sorted_example.txt example.txt)
 [bob@host-3 Документы]$ cat sorted_example.txt
 
 -
@@ -108,7 +107,7 @@ QuickSort
 не 
 согласны
 это
-[bob@host-3 Документы]$ sort -r example.txt -o revsorted_example.txt 
+[bob@host-3 Документы]$ sort -r example.txt -o revsorted_example.txt (Аналогично пред. sort)
 [bob@host-3 Документы]$ cat revsorted_example.txt 
 это
 согласны

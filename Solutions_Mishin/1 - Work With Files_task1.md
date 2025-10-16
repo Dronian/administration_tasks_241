@@ -41,7 +41,7 @@ second_dir
 5. Внутри папки создать файлик и записать в него что-нибудь
 [bob@host-3 ~]$ cd Practice
 [bob@host-3 Practice]$ touch practice.txt  (Можно было и так: touch Practice/practice_2.txt)
-[bob@host-3 Practice]$ vim practice.txt
+[bob@host-3 Practice]$ vim practice.txt (Можно было через echo и >)
 В vim'e было проделано следующее: i -> ввели текст -> esc -> :wq
 [bob@host-3 Practice]$ cat practice.txt
 QuickSort - это база. Спасибо Хоару за победу!

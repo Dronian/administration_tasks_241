@@ -50,13 +50,16 @@ umount "$MOUNT_POINT" 2>/dev/null || true
 
 # Пытаемся найти массивы, связанные с этим диском, и остановить их
 if lsblk "$DISK" | grep -q "md"; then
-mdadm --stop --scan || true
-mdadm --zero-superblock "$DISK" || true 
+   mdadm --stop --scan || true
+   mdadm --zero-superblock "$DISK" || true 
 fi
 
 # Отключаем swap, в случае наличия
 swapoff "$DISK" 2>/dev/null || true
 swapoff "$PARTITION" 2>/dev/null || true
+
+# Очищаем подписи (на случай, если диск был частью чего-то)
+wipefs -a "$DISK"
 
 # Создаем таблицу разделов и новый раздел
 echo ",,L" | sfdisk "$DISK"
@@ -80,16 +83,21 @@ touch "$MOUNT_POINT/script_created_me.txt"
 # Добавляем запись в fstab для автозагрузки (Получаем UUID раздела)
 UUID=$(blkid -s UUID -o value "$PARTITION")
 
+if [ -z "$UUID" ]; then 
+   echo "Не удалось получить UUID раздела." 
+   exit 1 
+fi
+
 # Удаляем старые записи об этом UUID или точке монтирования
 sed -i "\|$MOUNT_POINT|d" /etc/fstab
 sed -i "\|$UUID|d" /etc/fstab
 
 # Проверяем, нет ли уже такой записи в fstab
 if grep -q "$UUID" /etc/fstab; then
-    echo "Такой UUID уже есть в fstab."
+   echo "Такой UUID уже есть в fstab."
 else
-    echo "UUID=$UUID $MOUNT_POINT ext4 defaults 0 0" >> /etc/fstab
-    echo "Запись добавлена в fstab."
+   echo "UUID=$UUID $MOUNT_POINT ext4 defaults,nofail,x-systemd.device-timeout=5 0 2" >> /etc/fstab
+   echo "Запись добавлена в fstab."
 fi
 
 df -h | grep "$MOUNT_POINT"
